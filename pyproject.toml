@@ -6,7 +6,6 @@ license = { text = "Apache-2.0" }
 
 [project.urls]
 Repository = "https://github.com/TensorVizion/OmniNodes-ComfyUI"
-README: https://github.com/TensorVizion/OmniNodes-ComfyUI/blob/main/README.md
 #  Used by Comfy Registry https://registry.comfy.org
 
 [tool.comfy]
@@ -15,4 +14,5 @@ DisplayName = "OmniNodes"
 Icon = "https://imgur.com/a/6wMJ92D"
 includes = [] 
 # "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
+personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 

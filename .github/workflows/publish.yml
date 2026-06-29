@@ -1,0 +1,29 @@
+name: Publish OmniNodes-ComfyUI to Registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'custom_nodes/OmniNodes-ComfyUI/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Comfy CLI
+        run: pip install comfy-cli
+
+      - name: Publish OmniNodes-ComfyUI
+        env:
+          COMFY_PUBLISHER_API_KEY: ${{ secrets.COMFY_PUBLISHER_API_KEY }}
+        run: |
+          cd custom_nodes/OmniNodes-ComfyUI
+          comfy node publish

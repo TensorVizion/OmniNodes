@@ -1,17 +1,18 @@
 [project]
-name = "TensorVizion"
-description = "Utility Nodes for All Comfy Users"
+name = "OmniNodes"
+description = "Utility Nodes for All Comfy Users - Constantly Updating With Fresh Nodes & Upgraded Versions Of Current Nodes"
 version = "1.0.0"
-license = "MIT"
+license = { text = "Apache-2.0" } 
 
 [project.urls]
 Repository = "https://github.com/TensorVizion/OmniNodes-ComfyUI"
+README: https://github.com/TensorVizion/OmniNodes-ComfyUI/blob/main/README.md
 #  Used by Comfy Registry https://registry.comfy.org
 
 [tool.comfy]
 PublisherId = "TensorVizion"
-DisplayName = "ComfyUI-AIT"
-Icon = ""
+DisplayName = "OmniNodes"
+Icon = "https://imgur.com/a/6wMJ92D"
 includes = [] 
 # "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
 

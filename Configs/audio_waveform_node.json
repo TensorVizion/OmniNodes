@@ -1,0 +1,94 @@
+{
+  "id": "AudioWaveformNode",
+  "name": "Audio Waveform \ud83c\udfb5",
+  "category": "TensorVizion/Audio",
+  "description": "Renders an audio waveform as a ComfyUI IMAGE tensor.",
+  "inputs": [
+    {
+      "name": "audio_samples",
+      "type": "AUDIO",
+      "required": true
+    },
+    {
+      "name": "width",
+      "type": "INT",
+      "required": true,
+      "default": 1024,
+      "min": 256,
+      "max": 4096,
+      "step": 64
+    },
+    {
+      "name": "height",
+      "type": "INT",
+      "required": true,
+      "default": 256,
+      "min": 64,
+      "max": 2048,
+      "step": 64
+    },
+    {
+      "name": "line_color_r",
+      "type": "INT",
+      "required": true,
+      "default": 0,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "line_color_g",
+      "type": "INT",
+      "required": true,
+      "default": 212,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "line_color_b",
+      "type": "INT",
+      "required": true,
+      "default": 255,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "bg_color_r",
+      "type": "INT",
+      "required": true,
+      "default": 5,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "bg_color_g",
+      "type": "INT",
+      "required": true,
+      "default": 10,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "bg_color_b",
+      "type": "INT",
+      "required": true,
+      "default": 20,
+      "min": 0,
+      "max": 255
+    },
+    {
+      "name": "line_thickness",
+      "type": "INT",
+      "required": true,
+      "default": 2,
+      "min": 1,
+      "max": 8
+    }
+  ],
+  "outputs": [
+    {
+      "name": "waveform_image",
+      "type": "IMAGE"
+    }
+  ],
+  "function": "render_waveform"
+}

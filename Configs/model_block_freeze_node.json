@@ -1,0 +1,87 @@
+{
+  "id": "ModelBlockFreezeNode",
+  "name": "Model Block Freeze \ud83e\uddca",
+  "category": "TensorVizion/Model Utilities",
+  "description": "Selectively freezes input, middle, or output block ranges of a diffusion model by applying zero-weight patches.",
+  "inputs": [
+    {
+      "name": "model",
+      "type": "MODEL",
+      "required": true
+    },
+    {
+      "name": "freeze_input",
+      "type": "BOOLEAN",
+      "required": true,
+      "default": false
+    },
+    {
+      "name": "freeze_middle",
+      "type": "BOOLEAN",
+      "required": true,
+      "default": false
+    },
+    {
+      "name": "freeze_output",
+      "type": "BOOLEAN",
+      "required": true,
+      "default": false
+    },
+    {
+      "name": "input_block_start",
+      "type": "INT",
+      "required": true,
+      "default": 0,
+      "min": 0,
+      "max": 11,
+      "step": 1
+    },
+    {
+      "name": "input_block_end",
+      "type": "INT",
+      "required": true,
+      "default": 3,
+      "min": 0,
+      "max": 11,
+      "step": 1
+    },
+    {
+      "name": "output_block_start",
+      "type": "INT",
+      "required": true,
+      "default": 8,
+      "min": 0,
+      "max": 11,
+      "step": 1
+    },
+    {
+      "name": "output_block_end",
+      "type": "INT",
+      "required": true,
+      "default": 11,
+      "min": 0,
+      "max": 11,
+      "step": 1
+    },
+    {
+      "name": "freeze_strength",
+      "type": "FLOAT",
+      "required": true,
+      "default": 0.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05
+    }
+  ],
+  "outputs": [
+    {
+      "name": "model",
+      "type": "MODEL"
+    },
+    {
+      "name": "freeze_summary",
+      "type": "STRING"
+    }
+  ],
+  "function": "freeze_blocks"
+}

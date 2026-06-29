@@ -1,0 +1,87 @@
+{
+  "id": "AudioSpectrogramNode",
+  "name": "Audio Spectrogram \ud83c\udf9b\ufe0f",
+  "category": "TensorVizion/Audio",
+  "description": "Generates a Mel/FFT spectrogram visualisation from raw audio and outputs a ComfyUI IMAGE tensor.",
+  "inputs": [
+    {
+      "name": "audio_samples",
+      "type": "AUDIO",
+      "required": true
+    },
+    {
+      "name": "sample_rate",
+      "type": "INT",
+      "required": true,
+      "default": 44100,
+      "min": 8000,
+      "max": 192000,
+      "step": 100
+    },
+    {
+      "name": "width",
+      "type": "INT",
+      "required": true,
+      "default": 1024,
+      "min": 256,
+      "max": 4096,
+      "step": 64
+    },
+    {
+      "name": "height",
+      "type": "INT",
+      "required": true,
+      "default": 512,
+      "min": 64,
+      "max": 2048,
+      "step": 64
+    },
+    {
+      "name": "fft_size",
+      "type": "INT",
+      "required": true,
+      "default": 2048,
+      "min": 256,
+      "max": 8192,
+      "step": 256
+    },
+    {
+      "name": "hop_length",
+      "type": "INT",
+      "required": true,
+      "default": 512,
+      "min": 64,
+      "max": 2048,
+      "step": 64
+    },
+    {
+      "name": "spectrogram_type",
+      "type": "COMBO",
+      "required": true,
+      "options": [
+        "linear",
+        "log_power"
+      ],
+      "default": "log_power"
+    },
+    {
+      "name": "colormap",
+      "type": "COMBO",
+      "required": true,
+      "options": [
+        "cyan_dark",
+        "viridis",
+        "hot",
+        "grayscale"
+      ],
+      "default": "cyan_dark"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "spectrogram_image",
+      "type": "IMAGE"
+    }
+  ],
+  "function": "render_spectrogram"
+}

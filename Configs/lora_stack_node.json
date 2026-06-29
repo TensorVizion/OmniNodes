@@ -1,0 +1,158 @@
+{
+  "id": "LoRAStackNode",
+  "name": "LoRA Stack \ud83d\uddc2\ufe0f",
+  "category": "TensorVizion/Model Utilities",
+  "description": "Chains up to 5 LoRAs with individual model and clip weights in a single node.",
+  "inputs": [
+    {
+      "name": "model",
+      "type": "MODEL",
+      "required": true
+    },
+    {
+      "name": "clip",
+      "type": "CLIP",
+      "required": true
+    },
+    {
+      "name": "lora_1",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras",
+      "default": "None"
+    },
+    {
+      "name": "model_weight_1",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "clip_weight_1",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "lora_2",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras",
+      "default": "None"
+    },
+    {
+      "name": "model_weight_2",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "clip_weight_2",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "lora_3",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras",
+      "default": "None"
+    },
+    {
+      "name": "model_weight_3",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "clip_weight_3",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "lora_4",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras",
+      "default": "None"
+    },
+    {
+      "name": "model_weight_4",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "clip_weight_4",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "lora_5",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras",
+      "default": "None"
+    },
+    {
+      "name": "model_weight_5",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    },
+    {
+      "name": "clip_weight_5",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -10.0,
+      "max": 10.0,
+      "step": 0.01
+    }
+  ],
+  "outputs": [
+    {
+      "name": "model",
+      "type": "MODEL"
+    },
+    {
+      "name": "clip",
+      "type": "CLIP"
+    },
+    {
+      "name": "stack_summary",
+      "type": "STRING"
+    }
+  ],
+  "function": "apply_lora_stack"
+}

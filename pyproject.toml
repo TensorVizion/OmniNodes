@@ -9,7 +9,7 @@ Repository = "https://github.com/TensorVizion/OmniNodes-ComfyUI"
 #  Used by Comfy Registry https://registry.comfy.org
 
 [tool.comfy]
-PublisherId = "TensorVizion"
+PublisherId = "tensorvizion"
 DisplayName = "OmniNodes"
 Icon = "https://imgur.com/a/6wMJ92D"
 includes = [] 

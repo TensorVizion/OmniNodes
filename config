@@ -6,5 +6,5 @@
 	symlinks = false
 	ignorecase = true
 [remote "origin"]
-	url = https://github.com/TensorVizion/OmniNodes-ComfyUI
+	url = https://github.com/TensorVizion/OmniNodes
 	fetch = +refs/heads/*:refs/remotes/origin/*

@@ -22,10 +22,10 @@ license = "MIT"
 
 
 [project.urls]
-Repository = "https://github.com/TensorVizion/OmniNodes-ComfyUI"
+Repository = "https://github.com/TensorVizion/OmniNodes"
 #  Used by Comfy Registry https://registry.comfy.org
-Documentation = "https://github.com/TensorVizion/OmniNodes-ComfyUI/wiki"
-"Bug Tracker" = "https://github.com/TensorVizion/OmniNodes-ComfyUI/issues"
+Documentation = "https://github.com/TensorVizion/OmniNodes/wiki"
+"Bug Tracker" = "https://github.com/TensorVizion/OmniNodes/issues"
 
 [tool.comfy]
 PublisherId = "tensorvizion"

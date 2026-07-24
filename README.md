@@ -1,6 +1,6 @@
 # OmniNodes — ComfyUI Custom Node Pack
 
-> **By TensorVizion** · 50 working nodes · 6 categories · Zero heavy dependencies
+> **By TensorVizion** · 70 working nodes · 7 categories · Zero heavy dependencies
 > All nodes verified working — see [Changelog](#changelog) for what was recently fixed and added.
 
 A production-grade ComfyUI custom node pack covering audio processing, image
@@ -29,7 +29,7 @@ pattern to be picked up, but each file **must** define its own
 
 Working nodes appear under the **TensorVizion/** category group in the node
 search menu, split into six sub-groups: `Audio`, `Image`, `Latent`,
-`Model Utilities`, `Prompt`, and `Workflow`.
+`Model Utilities`, `Prompt`, `Video` and `Workflow`.
 
 ---
 

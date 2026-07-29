@@ -52,10 +52,10 @@ class LatentMaskNode:
         """Returns a float32 (H, W) mask in [0, 1]; 1 = inside masked region."""
         mask = np.zeros((H, W), dtype=np.float32)
 
-        x0 = int(x * W);  y0 = int(y * H)
-        x1 = int((x + w) * W); y1 = int((y + h) * H)
-        cx = (x0 + x1) / 2.0;  cy = (y0 + y1) / 2.0
-        rx = max(1, (x1 - x0) / 2.0); ry = max(1, (y1 - y0) / 2.0)
+        x0 = int(x * W)  y0 = int(y * H)
+        x1 = int((x + w) * W) y1 = int((y + h) * H)
+        cx = (x0 + x1) / 2.0  cy = (y0 + y1) / 2.0
+        rx = max(1, (x1 - x0) / 2.0) ry = max(1, (y1 - y0) / 2.0)
 
         ys, xs = np.mgrid[0:H, 0:W]
 

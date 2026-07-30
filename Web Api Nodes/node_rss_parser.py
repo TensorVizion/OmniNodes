@@ -19,7 +19,7 @@ class RSSFeedParserNode:
     RETURN_TYPES = ("LIST", "STRING")
     RETURN_NAMES = ("entries", "raw_xml")
     FUNCTION = "parse_feed"
-    CATEGORY = "WebAPI Nodes"
+    CATEGORY = "TensorVizion/Web API"
     DESCRIPTION = "Fetch and parse RSS/Atom feed; returns list of entries."
 
     def parse_feed(self, feed_url: str, max_items: int, filter_keyword: str = ""):

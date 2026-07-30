@@ -27,7 +27,7 @@ class HTTPRequestNode:
     RETURN_TYPES = ("JSON", "STRING", "INT", "JSON")
     RETURN_NAMES = ("response_json", "response_text", "status_code", "response_headers")
     FUNCTION = "execute"
-    CATEGORY = "WebAPI Nodes"
+    CATEGORY = "TensorVizion/Web API"
     DESCRIPTION = "Send HTTP request and return response data."
 
     def execute(self, url: str, method: str, headers: str, body: str, timeout: float = 10.0):

@@ -17,7 +17,7 @@ class WebhookListenerNode:
     RETURN_TYPES = ("JSON", "STRING", "JSON", "BOOLEAN")
     RETURN_NAMES = ("payload_json", "raw_body", "headers", "new_data")
     FUNCTION = "listen"
-    CATEGORY = "WebAPI Nodes"
+    CATEGORY = "TensorVizion/Web API"
     DESCRIPTION = "Starts a local HTTP server to receive webhooks (use with caution)."
 
     def __init__(self):

@@ -25,7 +25,7 @@ class OAuth2TokenManagerNode:
     RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING")
     RETURN_NAMES = ("access_token", "refresh_token", "expires_at", "token_type")
     FUNCTION = "get_token"
-    CATEGORY = "WebAPI Nodes"
+    CATEGORY = "TensorVizion/Web API"
     DESCRIPTION = "Obtain OAuth2 access token using client credentials or password flow."
 
     def get_token(self, token_url: str, client_id: str, client_secret: str,

@@ -1,0 +1,11 @@
+# OmniNodes external dependencies.
+#
+# Everything else in this pack (Audio/Image/Latent/Model/Prompt/Sampling/
+# Video/Workflow nodes) runs on PyTorch, NumPy, and Pillow — all already
+# bundled with any ComfyUI install, so no extra pip installs are needed
+# for those categories.
+#
+# The Web API category is the one exception: HTTP Request, OAuth2 Token
+# Manager, RSS Feed Parser, and Endpoint Poller all use the `requests`
+# library, which is NOT bundled with ComfyUI by default.
+requests>=2.31.0

@@ -12,6 +12,6 @@ CivitAI: https://civitai.com/user/TensorVizion
 
 
 
-git remote add origin <https://github.com/TensorVizion/OmniNodes)>
+git remote add origin https://github.com/TensorVizion/OmniNodes
 
 

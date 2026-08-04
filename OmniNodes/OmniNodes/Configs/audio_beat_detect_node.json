@@ -1,0 +1,65 @@
+{
+  "id": "AudioBeatDetectNode",
+  "name": "Audio Beat Detect \ud83e\udd41",
+  "category": "TensorVizion/Audio",
+  "description": "Detects beat/onset positions in audio, returning timestamps, beat count, and estimated BPM.",
+  "inputs": [
+    {
+      "name": "audio_samples",
+      "type": "AUDIO",
+      "required": true
+    },
+    {
+      "name": "sample_rate",
+      "type": "INT",
+      "required": true,
+      "default": 44100,
+      "min": 8000,
+      "max": 192000
+    },
+    {
+      "name": "sensitivity",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.5,
+      "min": 0.5,
+      "max": 5.0,
+      "step": 0.1
+    },
+    {
+      "name": "min_bpm",
+      "type": "INT",
+      "required": true,
+      "default": 60,
+      "min": 20,
+      "max": 200
+    },
+    {
+      "name": "max_bpm",
+      "type": "INT",
+      "required": true,
+      "default": 200,
+      "min": 40,
+      "max": 300
+    }
+  ],
+  "outputs": [
+    {
+      "name": "beat_times",
+      "type": "STRING"
+    },
+    {
+      "name": "beat_count",
+      "type": "INT"
+    },
+    {
+      "name": "bpm",
+      "type": "FLOAT"
+    },
+    {
+      "name": "summary",
+      "type": "STRING"
+    }
+  ],
+  "function": "detect_beats"
+}

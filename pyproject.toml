@@ -1,7 +1,7 @@
 [project]
 name = "omninodes-comfyui"
 description = "custom nodes with a variety to build premium workflows"
-version = "0.5.0"
+version = "0.7.0"
 license = "MIT" 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)
@@ -24,13 +24,13 @@ license = "MIT"
 [project.urls]
 Repository = "https://github.com/TensorVizion/OmniNodes"
 #  Used by Comfy Registry https://registry.comfy.org
-Documentation = "https://github.com/TensorVizion/OmniNodesi"
+Documentation = "https://github.com/TensorVizion/OmniNodes"
 "Bug Tracker" = "https://github.com/TensorVizion/OmniNodes"
 
 [tool.comfy]
 PublisherId = "tensorvizion"
 DisplayName = "OmniNodes-ComfyUI"
-Icon = ""
+Icon = "https://imgur.com/EQNEhrb"
 includes = [] 
 # "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
 

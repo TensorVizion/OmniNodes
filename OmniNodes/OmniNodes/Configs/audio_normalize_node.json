@@ -1,0 +1,63 @@
+{
+  "id": "AudioNormalizeNode",
+  "name": "Audio Normalize \ud83d\udd0a",
+  "category": "TensorVizion/Audio",
+  "description": "Normalises audio amplitude to a target peak or RMS dBFS level with optional DC offset removal and soft-clip protection.",
+  "inputs": [
+    {
+      "name": "audio_samples",
+      "type": "AUDIO",
+      "required": true
+    },
+    {
+      "name": "target_db",
+      "type": "FLOAT",
+      "required": true,
+      "default": -3.0,
+      "min": -60.0,
+      "max": 0.0,
+      "step": 0.5
+    },
+    {
+      "name": "normalize_mode",
+      "type": "COMBO",
+      "required": true,
+      "options": [
+        "peak",
+        "rms"
+      ],
+      "default": "peak"
+    },
+    {
+      "name": "remove_dc_offset",
+      "type": "BOOLEAN",
+      "required": true,
+      "default": true
+    },
+    {
+      "name": "soft_clip",
+      "type": "BOOLEAN",
+      "required": true,
+      "default": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "audio",
+      "type": "AUDIO"
+    },
+    {
+      "name": "peak_db",
+      "type": "FLOAT"
+    },
+    {
+      "name": "rms_db",
+      "type": "FLOAT"
+    },
+    {
+      "name": "summary",
+      "type": "STRING"
+    }
+  ],
+  "function": "normalize_audio"
+}

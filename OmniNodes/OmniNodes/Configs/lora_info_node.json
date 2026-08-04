@@ -1,0 +1,37 @@
+{
+  "id": "LoRAInfoNode",
+  "name": "LoRA Info Inspector \ud83d\udd2c",
+  "category": "TensorVizion/Model Utilities",
+  "description": "Inspects a LoRA file and returns rank, alpha, key count, estimated parameter count, and target modules \u2014 without applying it to any model.",
+  "inputs": [
+    {
+      "name": "lora_name",
+      "type": "COMBO",
+      "required": true,
+      "source": "loras"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "summary",
+      "type": "STRING"
+    },
+    {
+      "name": "key_count",
+      "type": "INT"
+    },
+    {
+      "name": "rank",
+      "type": "INT"
+    },
+    {
+      "name": "alpha",
+      "type": "FLOAT"
+    },
+    {
+      "name": "target_modules",
+      "type": "STRING"
+    }
+  ],
+  "function": "inspect_lora"
+}

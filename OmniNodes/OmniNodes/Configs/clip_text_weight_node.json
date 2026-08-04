@@ -1,0 +1,50 @@
+{
+  "id": "CLIPTextWeightNode",
+  "name": "CLIP Text Weight \u2696\ufe0f",
+  "category": "TensorVizion/Model Utilities",
+  "description": "Encodes a prompt and scales the conditioning by a weight scalar. Optionally blends with an incoming conditioning at a set ratio.",
+  "inputs": [
+    {
+      "name": "clip",
+      "type": "CLIP",
+      "required": true
+    },
+    {
+      "name": "prompt",
+      "type": "STRING",
+      "required": true,
+      "multiline": true,
+      "default": ""
+    },
+    {
+      "name": "weight",
+      "type": "FLOAT",
+      "required": true,
+      "default": 1.0,
+      "min": -3.0,
+      "max": 3.0,
+      "step": 0.05
+    },
+    {
+      "name": "conditioning_in",
+      "type": "CONDITIONING",
+      "required": false
+    },
+    {
+      "name": "blend_ratio",
+      "type": "FLOAT",
+      "required": false,
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+    }
+  ],
+  "outputs": [
+    {
+      "name": "conditioning",
+      "type": "CONDITIONING"
+    }
+  ],
+  "function": "encode_with_weight"
+}

@@ -1,0 +1,46 @@
+{
+  "id": "CLIPTextCompareNode",
+  "name": "CLIP Text Compare \ud83d\udd0d",
+  "category": "TensorVizion/Model Utilities",
+  "description": "Encodes two prompts and outputs both conditionings plus a cosine similarity score for prompt A/B testing.",
+  "inputs": [
+    {
+      "name": "clip",
+      "type": "CLIP",
+      "required": true
+    },
+    {
+      "name": "prompt_a",
+      "type": "STRING",
+      "required": true,
+      "multiline": true,
+      "default": "a futuristic city at night"
+    },
+    {
+      "name": "prompt_b",
+      "type": "STRING",
+      "required": true,
+      "multiline": true,
+      "default": "a neon-lit cyberpunk street"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "conditioning_a",
+      "type": "CONDITIONING"
+    },
+    {
+      "name": "conditioning_b",
+      "type": "CONDITIONING"
+    },
+    {
+      "name": "similarity",
+      "type": "FLOAT"
+    },
+    {
+      "name": "similarity_label",
+      "type": "STRING"
+    }
+  ],
+  "function": "compare_prompts"
+}

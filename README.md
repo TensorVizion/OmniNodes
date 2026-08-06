@@ -1,7 +1,7 @@
 # OmniNodes — ComfyUI Custom Node Pack
 
-> **By TensorVizion** · 101 node files across 9 categories · Verified against
-> the actual pack contents on 2026-08-04.
+> **By TensorVizion** · 109 node files across 9 categories · Verified against
+> the actual pack contents on 2026-08-06.
 
 A production-grade ComfyUI custom node pack covering audio processing, image
 post-processing, latent space manipulation, model utilities, prompt/wildcard
@@ -67,24 +67,25 @@ and Sampling nodes are split the way they are.
 | **Audio Transient Shaper 🥊** | Boosts or reduces the attack/sustain portions of a signal. |
 | **Audio Waveform 🎵** | Renders a waveform visualization as an IMAGE. |
 
-### 🖼️ Image Nodes — `TensorVizion/Image` (14 nodes)
+### 🖼️ Image Nodes — `TensorVizion/Image` (15 nodes)
 
 | Node | Summary |
 |------|---------|
-| **3D LUT Apply 🎞️** *(new)* | Loads a standard Adobe/IRIDAS `.cube` 3D LUT file and applies it via trilinear interpolation, with an adjustable strength blend. Complements Image Color Grade's manual sliders with professional LUT-driven grading. |
-| **Contact Sheet Maker 🗺️** | Tiles a batch of images into a labeled contact-sheet grid. |
+| **3D LUT Apply 🎞️** | Loads a standard Adobe/IRIDAS `.cube` 3D LUT file and applies it via trilinear interpolation, with an adjustable strength blend. |
+| **Contact Sheet Maker 🗺️** | Tiles a batch of images into an unlabeled thumbnail grid for browsing. |
 | **Custom Folder Batch Saver 📁** | Saves a batch to an arbitrary directory (not ComfyUI's managed output root) with persistent zero-padded numbering. |
 | **Aspect Ratio Bucket 📐** | Snaps an image to the nearest standard SD/SDXL aspect-ratio training bucket. |
 | **Image Blend 🖌️** | Blends two images with selectable blend modes, ratio, strength, and optional mask. |
 | **Image Color Grade 🎨** | Exposure/contrast/saturation/gamma/lift/gain/temperature/tint grading. |
+| **Image Grid Compare 🆚** *(new)* | Labeled side-by-side comparison grid — one text label per cell, plus an optional highlight border. Genuinely different from Contact Sheet Maker: this is built for labeled comparison (sampler/strength/seed sweeps), not just browsing a batch. |
 | **Face Detect & Crop 🙂** | Detects faces and returns cropped outputs plus a detection mask. |
 | **Image Mask Composite 🖼️** | Draws shape/effect masks (darken, brighten, blur, color) directly onto an image. |
 | **Image Noise Inject 🎞️** | Adds film-grain-style noise with selectable blend mode and monochrome option. |
 | **Image Sharpen & Blur 🔎** | Unsharp-mask sharpening or Gaussian blur in one node. |
 | **Image Vignette & Glow ✨** | Vignette darkening plus a bloom/glow effect on bright regions. |
-| **Mask Morphology 🩹** *(new)* | Grow, shrink, feather, or invert a MASK. Fills a real gap — the pack had rich latent-space masking but no plain IMAGE-space MASK utilities. |
-| **Resize to Multiple 📏** *(new)* | Pads, crops, or stretches an image to the nearest multiple of N (8 by default, for SD/SDXL VAE compatibility) without distorting aspect ratio unless stretch mode is chosen. |
-| **Text Overlay ✏️** *(new)* | Draws text onto an image with font/size/color/anchor-position/stroke/background-box controls. No text-rendering capability existed anywhere in the pack before this. |
+| **Mask Morphology 🩹** | Grow, shrink, feather, or invert a MASK. |
+| **Resize to Multiple 📏** | Pads, crops, or stretches an image to the nearest multiple of N (8 by default, for SD/SDXL VAE compatibility). |
+| **Text Overlay ✏️** | Draws text onto an image with font/size/color/anchor-position/stroke/background-box controls. |
 
 ### 🌀 Latent Nodes — `TensorVizion/Latent` (10 nodes)
 
@@ -101,7 +102,7 @@ and Sampling nodes are split the way they are.
 | **Latent Structure Probe 📡** | Renders a heatmap of latent activation structure. |
 | **Latent Visualizer 🔬** | Renders a human-viewable preview image of raw latent channels, plus stats. |
 
-### 🧰 Model Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Model` (20 nodes)
+### 🧰 Model Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Model` (26 nodes)
 
 | Node | Summary |
 |------|---------|
@@ -110,21 +111,62 @@ and Sampling nodes are split the way they are.
 | **CLIP Text Compare 🔍** | Encodes two prompts and reports a similarity score between their conditioning. |
 | **CLIP Text Weight ⚖️** | Applies a scalar weight multiplier to CLIP conditioning. |
 | **ControlNet Loader 🕹️** | Loads a ControlNet model with a summary output. |
-| **ControlNet Preprocessor 🕹️** *(new)* | Converts an IMAGE into ControlNet conditioning (canny edges, a lightweight depth estimate, or lineart) without needing a separate ControlNet-aux install. Fills the biggest gap in the pack — ControlNet Loader existed with nothing upstream to build its conditioning image. |
+| **ControlNet Preprocessor 🕹️** | Converts an IMAGE into ControlNet conditioning (canny edges, a lightweight depth estimate, or lineart) without needing a separate ControlNet-aux install. |
+| **DoRA Loader (Custom) 🎯** *(new)* | Real magnitude/direction-decomposition DoRA merge engine — computes `W' = m·(W₀+BA)/‖W₀+BA‖_c` directly rather than treating DoRA as a scaled LoRA. See [Known Quirks](#known-quirks) for real limitations. |
 | **Dual Model Merger 🔀** | Merges two MODELs by weighted sum. |
+| **LoHa Loader (Custom) 🌀** *(new)* | Real Hadamard-product LoHa merge engine — `ΔW = (W1a@W1b) ⊙ (W2a@W2b)`, applied via ComfyUI's `add_patches` API. |
+| **LoKr Loader (Custom) 🧩** *(new)* | Real Kronecker-product LoKr merge engine — `ΔW = W1 ⊗ W2`, supporting both fully-dense and factored (low-rank) forms of either factor. |
 | **LoRA Info Inspector 🔬** | Reports rank, alpha, and target modules of a LoRA file without loading it into a pipeline. |
 | **LoRA Stack 🗂️** | Chains multiple LoRAs onto a MODEL/CLIP pair in one node. |
+| **LyCORIS Format Inspector 🔬** *(new)* | Reads a LoRA-family file's actual tensor key names to identify whether it's really LoRA, LoHa, LoKr, or DoRA-tagged — run this before any of the three loaders above, since misidentifying the format means applying the wrong math entirely. |
 | **Metadata Embed 🏷️** | Embeds custom metadata into a saved file. |
 | **Metadata Reader 🔖** | Reads embedded metadata back out as raw text and parsed JSON. |
 | **Model Block Freeze 🧊** | Freezes specific U-Net blocks (for partial fine-tuning workflows). |
 | **Model Info Inspector 🔬** | Reports key count, architecture guess, and precision of a loaded MODEL. |
 | **LoRA Metadata Diff 🆚** | Compares two LoRA files' metadata and reports structural compatibility. |
 | **Model Merge Weighted 🔀** | Weighted merge of two models with a single output. |
+| **Multi-LoRA Weight Sweep 📶** *(new)* | Applies one LoRA at a range of strengths, outputting a real ComfyUI list so downstream nodes (KSampler, etc.) automatically run once per strength value — no manual duplication of your sampler chain. Pairs with Image Grid Compare. |
 | **Quick LoRA Stacker ⚡** | Lighter/faster variant of LoRA Stack for simple single-LoRA cases. |
 | **Smart Unloader 🧹** | Frees VRAM by unloading models and running garbage collection; passes any type through unchanged. |
 | **Trigger Word Extractor 🏹** | Pulls a LoRA's trigger word out of a prompt and returns the cleaned remainder. |
 | **Upscale Model Loader 🔭** | Loads an upscale model (ESRGAN-family, etc.) with a summary output. |
 | **VAE Loader 🗝️** | Loads a VAE with a summary output. |
+| **VRAM / Model Size Estimator 📐** *(new)* | Estimates VRAM footprint for a checkpoint + up to 4 LoRAs, reading file headers only (no full load). Reports inference AND full-fine-tune estimates — a floor estimate, not a guarantee. |
+
+#### DoRA / LyCORIS node details
+
+**LyCORIS Format Inspector** — Reads only the safetensors header (tensor
+names/shapes), never the weight data, so it's fast even on large files.
+Detects format from real key-naming conventions: LoRA/LoCon
+(`lora_down.weight`/`lora_up.weight`/`alpha`), LoHa (`hada_w1_a`/`hada_w1_b`/
+`hada_w2_a`/`hada_w2_b`), LoKr (`lokr_w1`/`lokr_w2`, or their factored `_a`/`_b`
+variants), and a DoRA marker (`dora_scale`) that can appear alongside any of
+the above. Reports `detected_format="mixed"` with a warning if a file
+contains more than one format's keys — unusual, but not impossible for a
+hand-merged file.
+
+**LoHa Loader / LoKr Loader / DoRA Loader (Custom)** — All three compute
+their weight delta directly from the real published formulas (Hadamard
+product, Kronecker product, and magnitude/direction decomposition
+respectively — see each node's module docstring for the exact math and
+citations) and apply it via ComfyUI's own `ModelPatcher.add_patches()` API,
+never by editing a state_dict directly. This matters because ComfyUI's
+**built-in** LyCORIS auto-detection has a documented, open issue
+([ComfyUI #8683](https://github.com/comfyanonymous/ComfyUI/issues/8683))
+where LoHa/LoKr files can be silently mis-routed through the plain-LoRA
+merge path, producing a technically-running but mathematically wrong
+result. Loading explicitly through these nodes — after confirming the
+format with LyCORIS Format Inspector — avoids depending on that
+auto-detection succeeding. Conv2d (4D) weight support is NOT implemented
+in any of the three loaders (Linear/2D layers only) — see
+[Known Quirks](#known-quirks).
+
+**Multi-LoRA Weight Sweep** — Uses `OUTPUT_IS_LIST = (True, True, True)`,
+ComfyUI's real "List processing" mechanism (new to this pack — no other
+node uses it) — connecting the `model`/`clip` outputs into a downstream
+KSampler causes ComfyUI to run that KSampler once per strength value
+automatically. Wire the `labels` output into Image Grid Compare's `labels`
+input for an automatically-labeled comparison grid across the whole sweep.
 
 ### 🎲 Prompt Nodes — `TensorVizion/Prompt` (11 nodes)
 
@@ -261,7 +303,7 @@ specific filename as processed without scanning — useful if you don't want
 `mark_processed_immediately` to fire until downstream processing actually
 succeeds. Uses only the Python standard library, no extra dependency.
 
-### 🔀 Workflow Nodes — `TensorVizion/Workflow` (8 nodes)
+### 🔀 Workflow Nodes — `TensorVizion/Workflow` (9 nodes)
 
 | Node | Summary |
 |------|---------|
@@ -270,9 +312,10 @@ succeeds. Uses only the Python standard library, no extra dependency.
 | **Timer Start ⏱️▶️** | Starts a named timer, passing any type through unchanged. |
 | **Timer Stop ⏱️⏹️** | Stops a named timer and reports elapsed seconds. |
 | **Conditional Gate 🚦** | Routes to one of two outputs based on a boolean condition, reporting which branch fired. |
-| **Prompt List Iterator 📜** *(new)* | Reads prompts from a text file (one per line) or a folder of `.txt` files and returns the Nth one — pair with Batch Counter's index output to step through a whole list one prompt per queue run. |
-| **Try/Catch (Value Guard) 🛟** *(new)* | Checks an upstream value against common failure signals (None, an error-prefixed string, NaN/Inf) and substitutes a fallback if detected. See its docstring for an important scope note — it cannot intercept an upstream node crashing outright, only validate a value an upstream node's own error handling already produced. |
+| **Prompt List Iterator 📜** | Reads prompts from a text file (one per line) or a folder of `.txt` files and returns the Nth one — pair with Batch Counter's index output to step through a whole list one prompt per queue run. |
+| **Try/Catch (Value Guard) 🛟** | Checks an upstream value against common failure signals (None, an error-prefixed string, NaN/Inf) and substitutes a fallback if detected. See its docstring for an important scope note — it cannot intercept an upstream node crashing outright, only validate a value an upstream node's own error handling already produced. |
 | **Workflow End 🏁** | Terminal node that accepts up to 4 inputs of any type and produces a run summary. |
+| **Workflow Manifest Writer 📋** *(new)* | Writes a JSON record of the parameters that produced a given output — checkpoint, prompt, sampler settings, seed, LoRA stack — saved alongside the image with matching numbering. The pack had no "what exactly produced this image" record-keeping before this. |
 
 ---
 
@@ -325,6 +368,34 @@ them:
 - **3D LUT Apply only supports 3D `.cube` LUTs** (`LUT_3D_SIZE` header), not
   1D LUTs (`LUT_1D_SIZE`) — it raises a clear error naming the file if a 1D
   LUT is loaded, rather than silently misreading it.
+- **LoHa Loader, LoKr Loader, and DoRA Loader only support Linear-style 2D
+  weights — Conv2d (4D) layers are NOT implemented in any of the three.**
+  Real LoHa/LoKr/DoRA files commonly include both Linear (attention
+  projections) and Conv2d (ResBlock/UNet conv) layers; this pack's engines
+  will apply the Linear layers correctly and report every Conv2d layer as
+  skipped in the node's `summary` output, rather than silently ignoring
+  them or (worse) applying incorrect math to them. This means a full file's
+  effect will typically be PARTIAL, not complete, until Conv2d support is
+  added in a future update. Always check the `summary` output's skip counts
+  before assuming a merge fully applied.
+- **The key-name translation from LyCORIS's flattened naming
+  (`lora_unet_...`) to ComfyUI's internal dotted module paths is a
+  best-effort heuristic** (documented in each loader's `_map_to_model_key`
+  method), not a verified mapping table for every architecture. It's been
+  tested against the standard SD1.5/SDXL UNet naming convention; other
+  architectures (video models, non-UNet DiTs) may have layers that fail to
+  map and get skipped. This mirrors a real, currently-open upstream
+  ComfyUI issue (#12638) where LoKr keys go completely unloaded for at
+  least one non-UNet architecture — this pack's loaders make that failure
+  visible in `summary` rather than silent, but do not solve the underlying
+  mapping problem for every possible architecture.
+- **DoRA Loader requires reading the model's CURRENT weight** for each
+  affected layer to compute its magnitude/direction decomposition
+  correctly. If other patches were already applied to those same layers
+  earlier in your workflow graph, the DoRA math will be computed relative
+  to the already-patched weight, not the original base checkpoint weight —
+  for predictable results, apply DoRA Loader before other model-patching
+  nodes in your graph, not after.
 
 ---
 
@@ -339,34 +410,22 @@ OmniNodes/
 ├── Model Links.md               ← creator links (CivitAI/Ko-fi/Patreon), not node docs
 │
 ├── Audio Nodes/                  (12 files, TensorVizion/Audio)
-│   └── audio_loudness_match_node.py     ← new
-├── Image Nodes/                  (14 files, TensorVizion/Image)
-│   ├── mask_morphology_node.py          ← new
-│   ├── resize_to_multiple_node.py       ← new
-│   ├── text_overlay_node.py             ← new
-│   └── lut_apply_node.py                ← new
+├── Image Nodes/                  (15 files, TensorVizion/Image)
+│   └── image_grid_compare_node.py       ← new
 ├── Latent Nodes/                  (10 files, TensorVizion/Latent)
-│   └── latent_histogram_node.py         ← new
-├── Model Nodes/                  (20 files, TensorVizion/Model Utilities + TensorVizion/Model)
-│   └── controlnet_preprocessor_node.py  ← new
+├── Model Nodes/                  (26 files, TensorVizion/Model Utilities + TensorVizion/Model)
+│   ├── lycoris_format_inspector_node.py ← new
+│   ├── loha_loader_node.py              ← new
+│   ├── lokr_loader_node.py              ← new
+│   ├── dora_loader_node.py              ← new
+│   ├── lora_weight_sweep_node.py        ← new
+│   └── vram_estimator_node.py           ← new
 ├── Prompt Nodes/                 (11 files, TensorVizion/Prompt)
 ├── Sampling Nodes/                 (5 files, TensorVizion/Model Utilities + TensorVizion/Sampling)
-│   └── seed_stepper_node.py             ← new (uses TensorVizion/Sampling — see Known Quirks)
 ├── Video Nodes/                  (11 files, TensorVizion/Video)
 ├── Web API Nodes/                 (10 files, TensorVizion/Web API)
-│   ├── node_http_request.py
-│   ├── node_oauth_manager.py
-│   ├── node_rss_parser.py
-│   ├── node_webhook_listener.py
-│   ├── json_field_extractor_node.py
-│   ├── json_builder_node.py
-│   ├── endpoint_poller_node.py
-│   ├── response_saver_node.py
-│   ├── discord_notify_node.py           ← new
-│   └── folder_watcher_node.py           ← new
-├── Workflow Nodes/                 (8 files, TensorVizion/Workflow)
-│   ├── prompt_list_iterator_node.py     ← new
-│   └── try_catch_node.py                ← new
+├── Workflow Nodes/                 (9 files, TensorVizion/Workflow)
+│   └── workflow_manifest_writer_node.py ← new
 │
 └── Configs/                      ← JSON schema files for select nodes
 ```
@@ -440,6 +499,43 @@ measure. The unload/GC calls still run either way.
 ---
 
 ## Changelog
+
+**2026-08-06**
+- Added 8 new nodes: 4 real DoRA/LyCORIS merge engines plus 4 workflow
+  utility nodes.
+  - **LyCORIS Format Inspector 🔬** — detects real LoRA/LoHa/LoKr format
+    and DoRA marker presence from actual tensor key names, header-only
+    (fast, no weight data loaded).
+  - **LoHa Loader (Custom) 🌀** — real Hadamard-product merge engine.
+  - **LoKr Loader (Custom) 🧩** — real Kronecker-product merge engine,
+    supporting both dense and factored (low-rank) forms.
+  - **DoRA Loader (Custom) 🎯** — real magnitude/direction-decomposition
+    merge engine (not a scaled-LoRA approximation).
+  - All three merge engines apply their computed delta via ComfyUI's own
+    `ModelPatcher.add_patches()` API and were built specifically to avoid
+    a documented ComfyUI core issue (#8683) where built-in LyCORIS
+    auto-detection can silently mis-route LoHa/LoKr files through the
+    plain-LoRA path. Conv2d/4D layer support is NOT yet implemented in
+    any of the three — see [Known Quirks](#known-quirks).
+  - **Workflow Manifest Writer 📋** (Workflow Nodes) — JSON run-record
+    alongside saved outputs.
+  - **Image Grid Compare 🆚** (Image Nodes) — labeled comparison grid,
+    distinct from Contact Sheet Maker's unlabeled thumbnail tiling.
+  - **Multi-LoRA Weight Sweep 📶** (Model Nodes) — first node in this pack
+    to use ComfyUI's real `OUTPUT_IS_LIST` list-processing mechanism;
+    outputs a strength sweep as a true list for automatic downstream
+    iteration.
+  - **VRAM / Model Size Estimator 📐** (Model Nodes) — header-only VRAM
+    footprint estimate for a checkpoint + up to 4 LoRAs, before queuing.
+- Corrected a factual error in this README's own description of Contact
+  Sheet Maker (previously described as "labeled" — it is not; verified
+  against its actual docstring while writing Image Grid Compare's
+  differentiation note).
+- All 8 new nodes' core math/logic is covered by real functional tests —
+  the three merge engines were verified against hand-computed reference
+  values and, for DoRA specifically, against the defining mathematical
+  property of the algorithm itself (post-merge weight row norms exactly
+  equal the trained magnitude vector).
 
 **2026-08-04**
 - Added 12 new nodes spread across 6 categories:

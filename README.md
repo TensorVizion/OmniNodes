@@ -1,7 +1,7 @@
 # OmniNodes — ComfyUI Custom Node Pack
 
-> **By TensorVizion** · 109 node files across 9 categories · Verified against
-> the actual pack contents on 2026-08-06.
+> **By TensorVizion** · 115 node files across 9 categories · Verified against
+> the actual pack contents on 2026-08-08.
 
 A production-grade ComfyUI custom node pack covering audio processing, image
 post-processing, latent space manipulation, model utilities, prompt/wildcard
@@ -55,7 +55,7 @@ and Sampling nodes are split the way they are.
 | Node | Summary |
 |------|---------|
 | **Audio Beat Detect 🥁** | Energy-based onset detection; returns beat timestamps, count, and estimated BPM. |
-| **Audio Loudness Match 🎚️** *(new)* | Matches one audio clip's perceived loudness to a reference clip — the audio equivalent of Video Color Match. Differs from Audio Normalize by targeting another clip's actual level rather than a fixed dBFS number. |
+| **Audio Loudness Match 🎚️** | Matches one audio clip's perceived loudness to a reference clip — the audio equivalent of Video Color Match. Differs from Audio Normalize by targeting another clip's actual level rather than a fixed dBFS number. |
 | **Audio Mixer 🎚️** | 4-channel stereo mixer with per-track gain, pan, and mute. |
 | **Audio Normalize 🔊** | Peak or RMS normalization to a target dBFS level, with DC-offset removal and soft-clip. |
 | **Audio Pitch Shift 🎼** | Phase-vocoder pitch shift, ±24 semitones, pure NumPy. |
@@ -67,7 +67,7 @@ and Sampling nodes are split the way they are.
 | **Audio Transient Shaper 🥊** | Boosts or reduces the attack/sustain portions of a signal. |
 | **Audio Waveform 🎵** | Renders a waveform visualization as an IMAGE. |
 
-### 🖼️ Image Nodes — `TensorVizion/Image` (15 nodes)
+### 🖼️ Image Nodes — `TensorVizion/Image` (16 nodes)
 
 | Node | Summary |
 |------|---------|
@@ -77,28 +77,49 @@ and Sampling nodes are split the way they are.
 | **Aspect Ratio Bucket 📐** | Snaps an image to the nearest standard SD/SDXL aspect-ratio training bucket. |
 | **Image Blend 🖌️** | Blends two images with selectable blend modes, ratio, strength, and optional mask. |
 | **Image Color Grade 🎨** | Exposure/contrast/saturation/gamma/lift/gain/temperature/tint grading. |
-| **Image Grid Compare 🆚** *(new)* | Labeled side-by-side comparison grid — one text label per cell, plus an optional highlight border. Genuinely different from Contact Sheet Maker: this is built for labeled comparison (sampler/strength/seed sweeps), not just browsing a batch. |
+| **Image Grid Compare 🆚** | Labeled side-by-side comparison grid — one text label per cell, plus an optional highlight border. Genuinely different from Contact Sheet Maker: this is built for labeled comparison (sampler/strength/seed sweeps), not just browsing a batch. |
 | **Face Detect & Crop 🙂** | Detects faces and returns cropped outputs plus a detection mask. |
 | **Image Mask Composite 🖼️** | Draws shape/effect masks (darken, brighten, blur, color) directly onto an image. |
 | **Image Noise Inject 🎞️** | Adds film-grain-style noise with selectable blend mode and monochrome option. |
 | **Image Sharpen & Blur 🔎** | Unsharp-mask sharpening or Gaussian blur in one node. |
 | **Image Vignette & Glow ✨** | Vignette darkening plus a bloom/glow effect on bright regions. |
+| **Load Image + Recovered Metadata 🔍** *(new)* | A `LoadImage`-equivalent (delegates actual pixel/mask decoding to core `LoadImage`) that ALSO recovers embedded generation parameters — seed, prompt, steps, cfg, sampler, checkpoint — from A1111/Forge-style PNG text chunks or ComfyUI's own embedded workflow JSON, exposed as individually-wireable outputs rather than a text dump. See details below. |
 | **Mask Morphology 🩹** | Grow, shrink, feather, or invert a MASK. |
 | **Resize to Multiple 📏** | Pads, crops, or stretches an image to the nearest multiple of N (8 by default, for SD/SDXL VAE compatibility). |
 | **Text Overlay ✏️** | Draws text onto an image with font/size/color/anchor-position/stroke/background-box controls. |
 
-### 🌀 Latent Nodes — `TensorVizion/Latent` (10 nodes)
+#### Load Image + Recovered Metadata details
+
+Drag in any finished PNG — your own past output, or a shared render — and if
+it has embedded generation data, this node hands back a real `seed` INT you
+can wire into Seed Stepper, a real `positive_prompt` STRING you can wire into
+`CLIPTextEncode`, and the sampler/steps/cfg/checkpoint it was made with,
+instead of a paragraph of text you'd read and retype by hand. `source`
+selects `auto` (tries ComfyUI's embedded workflow JSON first, falls back to
+A1111-style text), `comfyui`, or `a1111` explicitly. If no embedded metadata
+exists (a photo, a hand-drawn image, an unsupported tool's output),
+`metadata_found` is `False` and the text/numeric outputs return empty/zero
+defaults — the image still loads normally either way. For ComfyUI-format
+graphs with multiple `CLIPTextEncode` nodes, the longest text is guessed as
+positive and the shortest as negative — a heuristic, not a guarantee, for
+workflows that don't follow a simple single-KSampler structure. Different
+`KSampler`-family core nodes use different seed parameter names
+(`KSampler` uses `seed`, `KSamplerAdvanced` uses `noise_seed`) — both are
+checked.
+
+### 🌀 Latent Nodes — `TensorVizion/Latent` (11 nodes)
 
 | Node | Summary |
 |------|---------|
 | **Latent Anomaly Mask 🚩** | Flags statistically anomalous latent regions and outputs a corrected latent + mask. |
 | **Latent Blend 🌀** | Blends two latents by weighted average. |
 | **Latent Channel Mixer 🎚️** | Mixes/reweights latent channels, analogous to Image Channel Mixer. |
-| **Latent Histogram 📊** *(new)* | Renders a per-channel value-distribution histogram as an image, plus an outlier-percentage stat. A different diagnostic from Latent Visualizer's point statistics — shows distribution SHAPE (bimodal/heavy-tailed patterns point stats can hide). |
+| **Latent Histogram 📊** | Renders a per-channel value-distribution histogram as an image, plus an outlier-percentage stat. A different diagnostic from Latent Visualizer's point statistics — shows distribution SHAPE (bimodal/heavy-tailed patterns point stats can hide). |
 | **Latent Interpolate 🌉** | Walks between two latents (spherical/linear interpolation). |
 | **Latent Mask 🎭** | Generates rectangle/ellipse/gradient masks directly in latent space. |
 | **Latent Noise Inject 🌊** | Adds controlled noise directly to a latent tensor. |
 | **Latent Palette Extractor 🧬** | Extracts a signature/fingerprint summary from a latent for comparison. |
+| **Latent QC Gate 🚧** *(new)* | Automated PASS/FAIL sanity check on a sampled latent — NaN/Inf, near-blank (suspiciously flat) output, and outlier saturation (via median/MAD, robust to large-fraction contamination unlike a naive mean/std check) — with an optional fallback latent on failure. Nothing else in the pack checks a LATENT tensor itself before it reaches VAEDecode/Save; Try/Catch (Workflow Nodes) only covers STRING/scalar values. |
 | **Latent Structure Probe 📡** | Renders a heatmap of latent activation structure. |
 | **Latent Visualizer 🔬** | Renders a human-viewable preview image of raw latent channels, plus stats. |
 
@@ -112,26 +133,26 @@ and Sampling nodes are split the way they are.
 | **CLIP Text Weight ⚖️** | Applies a scalar weight multiplier to CLIP conditioning. |
 | **ControlNet Loader 🕹️** | Loads a ControlNet model with a summary output. |
 | **ControlNet Preprocessor 🕹️** | Converts an IMAGE into ControlNet conditioning (canny edges, a lightweight depth estimate, or lineart) without needing a separate ControlNet-aux install. |
-| **DoRA Loader (Custom) 🎯** *(new)* | Real magnitude/direction-decomposition DoRA merge engine — computes `W' = m·(W₀+BA)/‖W₀+BA‖_c` directly rather than treating DoRA as a scaled LoRA. See [Known Quirks](#known-quirks) for real limitations. |
+| **DoRA Loader (Custom) 🎯** | Real magnitude/direction-decomposition DoRA merge engine — computes `W' = m·(W₀+BA)/‖W₀+BA‖_c` directly rather than treating DoRA as a scaled LoRA. See [Known Quirks](#known-quirks) for real limitations. |
 | **Dual Model Merger 🔀** | Merges two MODELs by weighted sum. |
-| **LoHa Loader (Custom) 🌀** *(new)* | Real Hadamard-product LoHa merge engine — `ΔW = (W1a@W1b) ⊙ (W2a@W2b)`, applied via ComfyUI's `add_patches` API. |
-| **LoKr Loader (Custom) 🧩** *(new)* | Real Kronecker-product LoKr merge engine — `ΔW = W1 ⊗ W2`, supporting both fully-dense and factored (low-rank) forms of either factor. |
+| **LoHa Loader (Custom) 🌀** | Real Hadamard-product LoHa merge engine — `ΔW = (W1a@W1b) ⊙ (W2a@W2b)`, applied via ComfyUI's `add_patches` API. |
+| **LoKr Loader (Custom) 🧩** | Real Kronecker-product LoKr merge engine — `ΔW = W1 ⊗ W2`, supporting both fully-dense and factored (low-rank) forms of either factor. |
 | **LoRA Info Inspector 🔬** | Reports rank, alpha, and target modules of a LoRA file without loading it into a pipeline. |
 | **LoRA Stack 🗂️** | Chains multiple LoRAs onto a MODEL/CLIP pair in one node. |
-| **LyCORIS Format Inspector 🔬** *(new)* | Reads a LoRA-family file's actual tensor key names to identify whether it's really LoRA, LoHa, LoKr, or DoRA-tagged — run this before any of the three loaders above, since misidentifying the format means applying the wrong math entirely. |
+| **LyCORIS Format Inspector 🔬** | Reads a LoRA-family file's actual tensor key names to identify whether it's really LoRA, LoHa, LoKr, or DoRA-tagged — run this before any of the three loaders above, since misidentifying the format means applying the wrong math entirely. |
 | **Metadata Embed 🏷️** | Embeds custom metadata into a saved file. |
 | **Metadata Reader 🔖** | Reads embedded metadata back out as raw text and parsed JSON. |
 | **Model Block Freeze 🧊** | Freezes specific U-Net blocks (for partial fine-tuning workflows). |
 | **Model Info Inspector 🔬** | Reports key count, architecture guess, and precision of a loaded MODEL. |
 | **LoRA Metadata Diff 🆚** | Compares two LoRA files' metadata and reports structural compatibility. |
 | **Model Merge Weighted 🔀** | Weighted merge of two models with a single output. |
-| **Multi-LoRA Weight Sweep 📶** *(new)* | Applies one LoRA at a range of strengths, outputting a real ComfyUI list so downstream nodes (KSampler, etc.) automatically run once per strength value — no manual duplication of your sampler chain. Pairs with Image Grid Compare. |
+| **Multi-LoRA Weight Sweep 📶** | Applies one LoRA at a range of strengths, outputting a real ComfyUI list so downstream nodes (KSampler, etc.) automatically run once per strength value — no manual duplication of your sampler chain. Pairs with Image Grid Compare. |
 | **Quick LoRA Stacker ⚡** | Lighter/faster variant of LoRA Stack for simple single-LoRA cases. |
 | **Smart Unloader 🧹** | Frees VRAM by unloading models and running garbage collection; passes any type through unchanged. |
 | **Trigger Word Extractor 🏹** | Pulls a LoRA's trigger word out of a prompt and returns the cleaned remainder. |
 | **Upscale Model Loader 🔭** | Loads an upscale model (ESRGAN-family, etc.) with a summary output. |
 | **VAE Loader 🗝️** | Loads a VAE with a summary output. |
-| **VRAM / Model Size Estimator 📐** *(new)* | Estimates VRAM footprint for a checkpoint + up to 4 LoRAs, reading file headers only (no full load). Reports inference AND full-fine-tune estimates — a floor estimate, not a guarantee. |
+| **VRAM / Model Size Estimator 📐** | Estimates VRAM footprint for a checkpoint + up to 4 LoRAs, reading file headers only (no full load). Reports inference AND full-fine-tune estimates — a floor estimate, not a guarantee. |
 
 #### DoRA / LyCORIS node details
 
@@ -184,21 +205,31 @@ input for an automatically-labeled comparison grid across the whole sweep.
 | **Wildcard Loader 🎲** | Loads and resolves `__wildcard__` syntax from text files, seeded. |
 | **Wildcard Prompt Builder 🧩** | Assembles a full prompt from multiple wildcard categories in one node. |
 
-### 🌡️ Sampling Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Sampling` (5 nodes)
+### 🌡️ Sampling Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Sampling` (9 nodes)
 
 | Node | Summary |
 |------|---------|
 | **Empty Latent Image ⬜** | Creates a blank latent at a given resolution/batch size, wrapping core `EmptyLatentImage` with a summary output. |
-| **Seed Stepper 🌱** *(new)* | Tracks a persistent history of seeds used across queue runs. Supports increment, random-but-never-repeat, and cycle-through-a-fixed-list modes — Batch Counter already derives a fresh seed per run, but has no memory of which specific seeds were used. Uses `CATEGORY = "TensorVizion/Sampling"`, distinct from this category's other three nodes — see Known Quirks. |
+| **KSampler Base+Refiner 🎭** *(new)* | Real SDXL base+refiner two-stage handoff in one node — two `MODEL` inputs, internally runs `KSamplerAdvanced` twice with a correct leftover-noise handoff at `switch_fraction` (default 0.8, matching Stability AI's own published recommendation), instead of needing two manually-wired KSamplerAdvanced nodes. |
+| **KSampler Conditioning Blend 🔀** *(new)* | Takes TWO positive `CONDITIONING` inputs and a `blend_ratio`, weighted-averages them (same math as ComfyUI's own core ConditioningAverage), then samples — one extra CONDITIONING input instead of an extra model or image/mask pair. |
+| **KSampler Masked Inpaint 🖌️** *(new)* | Takes `IMAGE`+`MASK` directly instead of a pre-built `LATENT` — encodes via core `VAEEncodeForInpaint` (mask-grow handled correctly, not reimplemented) then samples in one call, fewer required inputs than the usual two-node VAE-Encode-for-Inpainting → KSampler chain. |
+| **KSampler Seed Variator 🎲** *(new)* | One config, many outputs: samples the same prompt across `num_variations` consecutive seeds and returns one batched `LATENT` — a "seed lottery" pass without wiring N separate KSampler nodes in parallel. |
+| **Seed Stepper 🌱** | Tracks a persistent history of seeds used across queue runs. Supports increment, random-but-never-repeat, and cycle-through-a-fixed-list modes — Batch Counter already derives a fresh seed per run, but has no memory of which specific seeds were used. Uses `CATEGORY = "TensorVizion/Sampling"`, distinct from this category's other nodes — see Known Quirks. |
 | **Simple KSampler 🌡️** | Wraps core `KSampler` with a summary output describing the sampling run. |
 | **VAE Decode 🔓** | Wraps core `VAEDecode` with a summary output. |
 | **VAE Encode 🔒** | Wraps core `VAEEncode` with a summary output. |
 
 *Empty Latent Image, Simple KSampler, VAE Decode, and VAE Encode are thin
-summary-adding wrappers around ComfyUI's own core sampling nodes (they import
-`EmptyLatentImage`/`KSampler`/`VAEDecode`/`VAEEncode` from `nodes` directly),
-not independent reimplementations. Seed Stepper is an independent utility
-node, not a wrapper.*
+summary-adding wrappers around ComfyUI's own core sampling nodes. Seed
+Stepper is an independent utility node. The four new KSampler variants each
+delegate their actual sampling math to ComfyUI's own core
+`KSampler`/`KSamplerAdvanced`/`VAEEncodeForInpaint` classes (called via
+`getattr(instance, instance.FUNCTION)` rather than a hardcoded method name,
+so they stay correct even if a future core version renames the internal
+method) — none of them reimplement diffusion sampling from scratch. Each one
+differs from the others in its actual input/output SHAPE (two models vs. two
+conditionings vs. image+mask vs. a seed-count widget), not just its default
+parameter values.*
 
 ### 🎬 Video Nodes — `TensorVizion/Video` (11 nodes)
 
@@ -231,8 +262,8 @@ JSON, saves results, notifies on completion, and tracks simple file queues.
 | **JSON Builder 🧱** | Assembles a JSON object from up to 4 key/value pairs (with auto type coercion) plus an optional merged JSON blob — for constructing request bodies without hand-typing JSON. |
 | **Endpoint Poller ⏳** | Repeatedly GETs a URL until a JSON field matches an expected value (or any 2xx if no field given), for async job-style APIs. Times out cleanly after `max_wait_seconds`. |
 | **Response Saver 💾** | Writes a JSON or text response to disk with the pack's standard collision-avoiding numbered-filename convention. |
-| **Discord Notify 🔔** *(new)* | Posts a message, optionally with an attached image, to a Discord webhook URL — the "ping me when this batch finishes" node. |
-| **Folder Watcher 👁️** *(new)* | Scans a folder and returns the next file not yet recorded in a manifest, enabling simple queue-style batch processing without a real job queue. |
+| **Discord Notify 🔔** | Posts a message, optionally with an attached image, to a Discord webhook URL — the "ping me when this batch finishes" node. |
+| **Folder Watcher 👁️** | Scans a folder and returns the next file not yet recorded in a manifest, enabling simple queue-style batch processing without a real job queue. |
 
 #### Web API node details
 
@@ -286,7 +317,7 @@ socket. Uses the same `name_001`, `name_002` collision-avoidance numbering as
 Video Save and Custom Folder Batch Saver, so repeat runs never overwrite a
 previous save.
 
-**Discord Notify** *(new)* — Posts `message` to `webhook_url` via Discord's
+**Discord Notify** — Posts `message` to `webhook_url` via Discord's
 webhook API. If an `image` is connected, the first frame of the batch is
 attached as a PNG — for multiple images, either call this node once per
 image or combine them into one image upstream with Contact Sheet Maker
@@ -294,7 +325,7 @@ first. Requires `requests`; if missing, returns a clear error rather than
 crashing. Treat the webhook URL like a password — anyone with it can post
 to that Discord channel.
 
-**Folder Watcher** *(new)* — Scans `folder_path` for files matching
+**Folder Watcher** — Scans `folder_path` for files matching
 `extensions`, sorted alphabetically, and returns the first one not yet
 recorded in a manifest JSON file (defaults to
 `<folder_path>/.tensorvizion_processed.json`). `mode="scan_and_return"`
@@ -315,7 +346,7 @@ succeeds. Uses only the Python standard library, no extra dependency.
 | **Prompt List Iterator 📜** | Reads prompts from a text file (one per line) or a folder of `.txt` files and returns the Nth one — pair with Batch Counter's index output to step through a whole list one prompt per queue run. |
 | **Try/Catch (Value Guard) 🛟** | Checks an upstream value against common failure signals (None, an error-prefixed string, NaN/Inf) and substitutes a fallback if detected. See its docstring for an important scope note — it cannot intercept an upstream node crashing outright, only validate a value an upstream node's own error handling already produced. |
 | **Workflow End 🏁** | Terminal node that accepts up to 4 inputs of any type and produces a run summary. |
-| **Workflow Manifest Writer 📋** *(new)* | Writes a JSON record of the parameters that produced a given output — checkpoint, prompt, sampler settings, seed, LoRA stack — saved alongside the image with matching numbering. The pack had no "what exactly produced this image" record-keeping before this. |
+| **Workflow Manifest Writer 📋** | Writes a JSON record of the parameters that produced a given output — checkpoint, prompt, sampler settings, seed, LoRA stack — saved alongside the image with matching numbering. The pack had no "what exactly produced this image" record-keeping before this. |
 
 ---
 
@@ -396,6 +427,34 @@ them:
   to the already-patched weight, not the original base checkpoint weight —
   for predictable results, apply DoRA Loader before other model-patching
   nodes in your graph, not after.
+- **The 4 new KSampler variants call ComfyUI's core sampler classes via
+  `getattr(instance, instance.FUNCTION)`** rather than a hardcoded method
+  name — this is deliberate (verified against real core source during
+  development, where a naive assumption about `KSamplerAdvanced`'s exact
+  parameter name for seed turned out to be wrong: it's `noise_seed`, not
+  `seed`, unlike plain `KSampler`). If ComfyUI core ever changes a
+  sampler's parameter *order* (not just method name), these nodes would
+  need updating — they pass arguments positionally, matching core's
+  confirmed real signatures as of this pack's last verification date.
+- **Load Image + Recovered Metadata's ComfyUI-format parser uses a
+  heuristic for multi-prompt graphs**: with more than one `CLIPTextEncode`
+  node in the embedded workflow, the longest text is guessed as positive
+  and the shortest as negative. This is correct for the common single
+  positive/negative pair but not guaranteed for workflows with several
+  prompt nodes (e.g. a base+refiner workflow with separate refiner
+  prompts, or a regional-prompting setup).
+- **Latent QC Gate's outlier check uses median/MAD, not mean/std** —
+  deliberately. An earlier mean/std version failed to catch a
+  deliberately-constructed test case where 20% of a latent's values were
+  extreme outliers, because that large a contaminated fraction pulls the
+  mean and standard deviation far enough to hide the very values that
+  should have tripped the check (the "masking effect" — mean/std have a
+  0% breakdown point; median/MAD have 50%). If you're comparing this
+  node's outlier-percent output to Latent Histogram's outlier stat
+  (Latent Nodes), note that node still uses mean/std — the two aren't
+  computing the exact same statistic, by design, for different purposes
+  (a chart you read yourself vs. an automated gate that needs to resist
+  being fooled by a large bad batch).
 
 ---
 
@@ -410,22 +469,20 @@ OmniNodes/
 ├── Model Links.md               ← creator links (CivitAI/Ko-fi/Patreon), not node docs
 │
 ├── Audio Nodes/                  (12 files, TensorVizion/Audio)
-├── Image Nodes/                  (15 files, TensorVizion/Image)
-│   └── image_grid_compare_node.py       ← new
-├── Latent Nodes/                  (10 files, TensorVizion/Latent)
+├── Image Nodes/                  (16 files, TensorVizion/Image)
+│   └── load_image_with_metadata_node.py ← new
+├── Latent Nodes/                  (11 files, TensorVizion/Latent)
+│   └── latent_qc_gate_node.py           ← new
 ├── Model Nodes/                  (26 files, TensorVizion/Model Utilities + TensorVizion/Model)
-│   ├── lycoris_format_inspector_node.py ← new
-│   ├── loha_loader_node.py              ← new
-│   ├── lokr_loader_node.py              ← new
-│   ├── dora_loader_node.py              ← new
-│   ├── lora_weight_sweep_node.py        ← new
-│   └── vram_estimator_node.py           ← new
 ├── Prompt Nodes/                 (11 files, TensorVizion/Prompt)
-├── Sampling Nodes/                 (5 files, TensorVizion/Model Utilities + TensorVizion/Sampling)
+├── Sampling Nodes/                 (9 files, TensorVizion/Model Utilities + TensorVizion/Sampling)
+│   ├── ksampler_base_refiner_node.py       ← new
+│   ├── ksampler_masked_inpaint_node.py     ← new
+│   ├── ksampler_seed_variator_node.py      ← new
+│   └── ksampler_conditioning_blend_node.py ← new
 ├── Video Nodes/                  (11 files, TensorVizion/Video)
 ├── Web API Nodes/                 (10 files, TensorVizion/Web API)
 ├── Workflow Nodes/                 (9 files, TensorVizion/Workflow)
-│   └── workflow_manifest_writer_node.py ← new
 │
 └── Configs/                      ← JSON schema files for select nodes
 ```
@@ -499,6 +556,42 @@ measure. The unload/GC calls still run either way.
 ---
 
 ## Changelog
+
+**2026-08-08**
+- Added 6 new nodes: 4 KSampler variants with genuinely different
+  input/output shapes, plus a Load Image variant and a Latent QC gate.
+  - **KSampler Base+Refiner 🎭** — real SDXL base+refiner handoff (two
+    `MODEL` inputs) via two internal `KSamplerAdvanced` calls with correct
+    leftover-noise handoff, not two independent samples stitched together.
+  - **KSampler Masked Inpaint 🖌️** — `IMAGE`+`MASK` in, `LATENT` out;
+    encodes via core `VAEEncodeForInpaint` internally.
+  - **KSampler Seed Variator 🎲** — one config in, one batched `LATENT` out
+    across N seeds; the inverse shape of Base+Refiner.
+  - **KSampler Conditioning Blend 🔀** — two positive `CONDITIONING`
+    inputs blended by ratio before sampling, using the same weighted-average
+    approach as core's own ConditioningAverage node.
+  - All four call ComfyUI's core sampler classes via
+    `getattr(instance, instance.FUNCTION)` rather than a hardcoded method
+    name, and were built against real core source (not assumed) —
+    development caught a real signature difference (`KSamplerAdvanced`
+    uses `noise_seed`, not `seed`) before it shipped as a bug.
+  - **Load Image + Recovered Metadata 🔍** (Image Nodes) — loads an image
+    via core `LoadImage` AND recovers embedded generation parameters
+    (seed/prompt/steps/cfg/sampler/checkpoint) from A1111-style PNG text
+    or ComfyUI's own embedded workflow JSON as individually-wireable
+    outputs, not a text dump.
+  - **Latent QC Gate 🚧** (Latent Nodes) — automated PASS/FAIL check on a
+    sampled latent (NaN/Inf, near-blank, outlier saturation) with an
+    optional fallback latent. Uses median/MAD for outlier detection
+    specifically because an initial mean/std version failed a deliberate
+    20%-contamination test case during development — see
+    [Known Quirks](#known-quirks) for the full explanation.
+- All 6 new nodes' core logic is covered by real functional tests, and two
+  genuine bugs were caught and fixed during that testing (the mean/std
+  masking-effect issue above, and an A1111 parser bug that duplicated text
+  across both positive/negative fields when no `Negative prompt:` marker
+  was present) — both are the kind of bug that would have shipped silently
+  without the tests catching them.
 
 **2026-08-06**
 - Added 8 new nodes: 4 real DoRA/LyCORIS merge engines plus 4 workflow

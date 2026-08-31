@@ -1,7 +1,7 @@
 # OmniNodes — ComfyUI Custom Node Pack
 
-> **By TensorVizion** · 115 node files across 9 categories · Verified against
-> the actual pack contents on 2026-08-08.
+> **By TensorVizion** · 127 node files across 9 categories · Verified against
+> the actual pack contents on 2026-08-31.
 
 A production-grade ComfyUI custom node pack covering audio processing, image
 post-processing, latent space manipulation, model utilities, prompt/wildcard
@@ -67,10 +67,12 @@ and Sampling nodes are split the way they are.
 | **Audio Transient Shaper 🥊** | Boosts or reduces the attack/sustain portions of a signal. |
 | **Audio Waveform 🎵** | Renders a waveform visualization as an IMAGE. |
 
-### 🖼️ Image Nodes — `TensorVizion/Image` (16 nodes)
+### 🖼️ Image Nodes — `TensorVizion/Image` (18 nodes)
 
 | Node | Summary |
 |------|---------|
+| **Apply Upscale Model 🔭** *(new)* | Runs an `UPSCALE_MODEL` (loaded by Upscale Model Loader) over an image, with an optional post-resize to a target long-edge size. Closes the gap between loading an upscale model and actually using it — previously the pack had no node to run one. |
+| **Quick Save Image 💾** *(new)* | Saves a single image into ComfyUI's own managed output tree (gallery-visible immediately, standard prefix_00001_ naming) with seed/model/notes embedded as PNG text chunks. Different from Metadata Embed and Custom Folder Batch Saver, both of which save outside the managed output tree. |
 | **3D LUT Apply 🎞️** | Loads a standard Adobe/IRIDAS `.cube` 3D LUT file and applies it via trilinear interpolation, with an adjustable strength blend. |
 | **Contact Sheet Maker 🗺️** | Tiles a batch of images into an unlabeled thumbnail grid for browsing. |
 | **Custom Folder Batch Saver 📁** | Saves a batch to an arbitrary directory (not ComfyUI's managed output root) with persistent zero-padded numbering. |
@@ -107,7 +109,7 @@ workflows that don't follow a simple single-KSampler structure. Different
 (`KSampler` uses `seed`, `KSamplerAdvanced` uses `noise_seed`) — both are
 checked.
 
-### 🌀 Latent Nodes — `TensorVizion/Latent` (11 nodes)
+### 🌀 Latent Nodes — `TensorVizion/Latent` (12 nodes)
 
 | Node | Summary |
 |------|---------|
@@ -119,14 +121,19 @@ checked.
 | **Latent Mask 🎭** | Generates rectangle/ellipse/gradient masks directly in latent space. |
 | **Latent Noise Inject 🌊** | Adds controlled noise directly to a latent tensor. |
 | **Latent Palette Extractor 🧬** | Extracts a signature/fingerprint summary from a latent for comparison. |
-| **Latent QC Gate 🚧** *(new)* | Automated PASS/FAIL sanity check on a sampled latent — NaN/Inf, near-blank (suspiciously flat) output, and outlier saturation (via median/MAD, robust to large-fraction contamination unlike a naive mean/std check) — with an optional fallback latent on failure. Nothing else in the pack checks a LATENT tensor itself before it reaches VAEDecode/Save; Try/Catch (Workflow Nodes) only covers STRING/scalar values. |
+| **Latent QC Gate 🚧** | Automated PASS/FAIL sanity check on a sampled latent — NaN/Inf, near-blank (suspiciously flat) output, and outlier saturation (via median/MAD, robust to large-fraction contamination unlike a naive mean/std check) — with an optional fallback latent on failure. Nothing else in the pack checks a LATENT tensor itself before it reaches VAEDecode/Save; Try/Catch (Workflow Nodes) only covers STRING/scalar values. |
+| **MiniMax H3 AV QC Gate 🚧** *(new)* | The Latent QC Gate concept, but for MiniMax H3's genuinely different joint video+audio latent shape (a `comfy.nested_tensor.NestedTensor` wrapping separate `[B,24,T,H//16,W//16]` video and `[B,32,2,T]` audio tensors, confirmed from ComfyUI core's real `EmptyMiniMaxH3LatentAV` source) — checks each modality independently, since a broken audio branch and a broken video branch are unrelated failures. A normal LATENT QC check cannot handle this shape at all. |
 | **Latent Structure Probe 📡** | Renders a heatmap of latent activation structure. |
 | **Latent Visualizer 🔬** | Renders a human-viewable preview image of raw latent channels, plus stats. |
 
-### 🧰 Model Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Model` (26 nodes)
+### 🧰 Model Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Model` (33 nodes)
 
 | Node | Summary |
 |------|---------|
+| **ControlNet Apply (Advanced) 🕹️** *(new)* | Applies a loaded ControlNet + control image to positive/negative conditioning, with strength and start/end-percent windowing. Was the one missing step between ControlNet Loader / ControlNet Preprocessor and sampling — previously required dropping back to a stock node. |
+| **Universal Checkpoint Loader 🌐** *(new)* | Model-family-agnostic MODEL/CLIP/VAE loader (SD1.5/SD2.x/SDXL/SD3/Flux), with a filename-based family guess in its summary output as a sanity check before wiring into family-specific sampling. Complements Simple SDXL Loader, which is SDXL-only. |
+| **Image Prompt Loader 🖼️** *(new)* | Loads a CLIP vision encoder + style model pair in one node, for image-conditioned ("style transfer from a reference image") workflows — a conditioning path the pack had none of before. Pairs with Image Prompt Apply. |
+| **Image Prompt Apply 🖼️** *(new)* | Encodes a reference image and applies it through a style model onto conditioning, at an adjustable strength. |
 | **Simple SDXL Loader 📀** | One-node MODEL/CLIP/VAE loader for SDXL checkpoints. |
 | **Batch Folder Loader 📂** | Loads a checkpoint by name from a subfolder under ComfyUI's registered checkpoint roots. |
 | **CLIP Text Compare 🔍** | Encodes two prompts and reports a similarity score between their conditioning. |
@@ -135,6 +142,8 @@ checked.
 | **ControlNet Preprocessor 🕹️** | Converts an IMAGE into ControlNet conditioning (canny edges, a lightweight depth estimate, or lineart) without needing a separate ControlNet-aux install. |
 | **DoRA Loader (Custom) 🎯** | Real magnitude/direction-decomposition DoRA merge engine — computes `W' = m·(W₀+BA)/‖W₀+BA‖_c` directly rather than treating DoRA as a scaled LoRA. See [Known Quirks](#known-quirks) for real limitations. |
 | **Dual Model Merger 🔀** | Merges two MODELs by weighted sum. |
+| **Krea 2 Guidance Helper 🎚️** *(new)* | Calculator/sanity-check for Krea 2's confirmed real guidance formula (`cond + guidance_scale*(cond-uncond)`). Recommends the right default per variant (1.0 Turbo / 4.5 Raw) or flags a manual value that's far off-spec, with a rough "how much is guidance actually doing" preview percentage. |
+| **Krea 2 Variant Validator ✅** *(new)* | Catches the single most consequential Krea 2 misconfiguration: applying Raw-variant settings (28 steps, cfg 4.5, negative prompt) to a loaded Turbo checkpoint, or vice versa — both loading paths look identical in the graph, so nothing else stops this mistake, which produces a technically-running but badly wrong result rather than an error. |
 | **LoHa Loader (Custom) 🌀** | Real Hadamard-product LoHa merge engine — `ΔW = (W1a@W1b) ⊙ (W2a@W2b)`, applied via ComfyUI's `add_patches` API. |
 | **LoKr Loader (Custom) 🧩** | Real Kronecker-product LoKr merge engine — `ΔW = W1 ⊗ W2`, supporting both fully-dense and factored (low-rank) forms of either factor. |
 | **LoRA Info Inspector 🔬** | Reports rank, alpha, and target modules of a LoRA file without loading it into a pipeline. |
@@ -189,10 +198,12 @@ KSampler causes ComfyUI to run that KSampler once per strength value
 automatically. Wire the `labels` output into Image Grid Compare's `labels`
 input for an automatically-labeled comparison grid across the whole sweep.
 
-### 🎲 Prompt Nodes — `TensorVizion/Prompt` (11 nodes)
+### 🎲 Prompt Nodes — `TensorVizion/Prompt` (13 nodes)
 
 | Node | Summary |
 |------|---------|
+| **CLIP Skip ✂️** *(new)* | Stops CLIP text-encoding early at N layers from the end — the standard "clip skip" option many SD1.5-era/anime checkpoints expect, and a basic utility the pack was missing entirely. |
+| **Conditioning Composer 🧩** *(new)* | One node covering combine / concat / set_area modes for merging two conditionings — regional and multi-concept prompting without needing three separate stock nodes. |
 | **CLIP Text Encode (Simple) ✍️** | Minimal CLIP text encode with a summary output, as a lighter alternative to core CLIPTextEncode. |
 | **Embedding Helper 🧷** | Helps format/insert textual-inversion embedding tokens into a prompt. |
 | **Negative Prompt Presets 🚫** | Dropdown-selectable common negative-prompt blocks. |
@@ -205,10 +216,11 @@ input for an automatically-labeled comparison grid across the whole sweep.
 | **Wildcard Loader 🎲** | Loads and resolves `__wildcard__` syntax from text files, seeded. |
 | **Wildcard Prompt Builder 🧩** | Assembles a full prompt from multiple wildcard categories in one node. |
 
-### 🌡️ Sampling Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Sampling` (9 nodes)
+### 🌡️ Sampling Nodes — `TensorVizion/Model Utilities` and `TensorVizion/Sampling` (10 nodes)
 
 | Node | Summary |
 |------|---------|
+| **Detailer (Crop-Inpaint-Paste) 🔎** *(new)* | Full region-fix loop: crops a masked region (e.g. from Face Detect & Crop) to its bounding box, upscales it for a full-resolution sampling pass, re-samples with fresh conditioning, then feather-pastes the result back. The pack had detection and sampling as separate pieces with nothing tying them into one pass — this is that missing connective node. |
 | **Empty Latent Image ⬜** | Creates a blank latent at a given resolution/batch size, wrapping core `EmptyLatentImage` with a summary output. |
 | **KSampler Base+Refiner 🎭** *(new)* | Real SDXL base+refiner two-stage handoff in one node — two `MODEL` inputs, internally runs `KSamplerAdvanced` twice with a correct leftover-noise handoff at `switch_fraction` (default 0.8, matching Stability AI's own published recommendation), instead of needing two manually-wired KSamplerAdvanced nodes. |
 | **KSampler Conditioning Blend 🔀** *(new)* | Takes TWO positive `CONDITIONING` inputs and a `blend_ratio`, weighted-averages them (same math as ComfyUI's own core ConditioningAverage), then samples — one extra CONDITIONING input instead of an extra model or image/mask pair. |
@@ -231,10 +243,11 @@ differs from the others in its actual input/output SHAPE (two models vs. two
 conditionings vs. image+mask vs. a seed-count widget), not just its default
 parameter values.*
 
-### 🎬 Video Nodes — `TensorVizion/Video` (11 nodes)
+### 🎬 Video Nodes — `TensorVizion/Video` (12 nodes)
 
 | Node | Summary |
 |------|---------|
+| **MiniMax H3 Duration Calculator ⏱️** *(new)* | Converts a plain "how many seconds" value into MiniMax H3's real required frame count, snapped to the model's confirmed 17k+5 frame grid at 24fps (the official ComfyUI template does this with a raw MathExpression string — this wraps the same confirmed formula into a labeled, documented, reusable node), plus resolution validation the official template skips entirely. |
 | **Video Color Match 🎨** | Matches the color grade of a video batch to a reference frame/image. |
 | **Video Concat / Splice 🔗** | Joins or splices IMAGE batches (ComfyUI's "video = batch of images" convention) end-to-end. |
 | **Video Frame Interpolate 🎥** | Generates in-between frames to increase apparent frame rate. |
@@ -556,6 +569,55 @@ measure. The unload/GC calls still run either way.
 ---
 
 ## Changelog
+
+**2026-08-31**
+- Added 8 new nodes closing the biggest gaps preventing a fully self-contained
+  workflow from being built with OmniNodes alone (no dropping back to stock
+  ComfyUI nodes for these steps):
+  - **ControlNet Apply (Advanced) 🕹️** (Model Nodes) — the missing apply step
+    between ControlNet Loader / ControlNet Preprocessor and sampling.
+  - **Apply Upscale Model 🔭** (Image Nodes) — runs the model Upscale Model
+    Loader loads; previously nothing in the pack executed it.
+  - **Universal Checkpoint Loader 🌐** (Model Nodes) — model-family-agnostic
+    loader (SD1.5/SD2.x/SDXL/SD3/Flux) alongside the SDXL-only Simple SDXL
+    Loader.
+  - **Conditioning Composer 🧩** (Prompt Nodes) — combine/concat/set_area in
+    one mode-switching node for regional/multi-concept prompting.
+  - **Detailer (Crop-Inpaint-Paste) 🔎** (Sampling Nodes) — full crop →
+    upscale → resample → feathered-paste loop off a mask input (e.g. from
+    Face Detect & Crop), the pack's first complete "fix a region" node.
+  - **Image Prompt Loader 🖼️** and **Image Prompt Apply 🖼️** (Model Nodes) —
+    a CLIP-vision/style-model pair enabling image-conditioned generation, a
+    conditioning path the pack had none of before.
+  - **CLIP Skip ✂️** (Prompt Nodes) — standard clip-skip utility.
+  - **Quick Save Image 💾** (Image Nodes) — single-image save into ComfyUI's
+    managed output tree with seed/model/notes embedded as PNG metadata.
+- Version bumped to 0.8.0.
+
+**2026-08-09**
+- Added 4 new nodes supporting MiniMax H3 and Krea 2 — both very recent
+  (H3 merged into ComfyUI core Aug 3, 2026) models with native ComfyUI
+  support already; these are OmniNodes-style QC/utility additions on top
+  of the official nodes, not replacements for them. Built against real
+  confirmed source (ComfyUI core's actual `comfy_extras/nodes_minimax_h3.py`
+  and the official H3 template), not assumed API shapes.
+  - **MiniMax H3 AV QC Gate 🚧** (Latent Nodes) — the Latent QC Gate concept
+    adapted for H3's genuinely different joint video+audio latent (a
+    `NestedTensor` wrapping separate video/audio tensors, confirmed from
+    core source), checking each modality independently.
+  - **MiniMax H3 Duration Calculator ⏱️** (Video Nodes) — wraps the
+    confirmed real 17k+5 frame-grid snap formula (verified against known
+    real grid points, including the exact 124-frame value cited in an
+    independent community source for a 5-second clip) into a labeled node.
+  - **Krea 2 Variant Validator ✅** (Model Nodes) — catches Turbo/Raw
+    variant setting mismatches (8-step/cfg-1.0 vs 28-step/cfg-4.5) before
+    a wasted run.
+  - **Krea 2 Guidance Helper 🎚️** (Model Nodes) — calculator/sanity-check
+    for Krea 2's confirmed guidance formula and per-variant defaults.
+- All 4 new nodes are covered by real functional tests, including a test
+  built around a genuine mock `NestedTensor` matching H3's confirmed real
+  structure, and a 1000-iteration randomized test confirming the frame-grid
+  snap formula always lands on a valid grid point.
 
 **2026-08-08**
 - Added 6 new nodes: 4 KSampler variants with genuinely different

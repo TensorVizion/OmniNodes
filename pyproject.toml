@@ -1,7 +1,7 @@
 [project]
 name = "omninodes-comfyui"
 description = "custom nodes with a variety to build premium workflows"
-version = "0.7.0"
+version = "0.8.0"
 license = "MIT" 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)

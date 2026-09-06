@@ -10,3 +10,10 @@
 # the `requests` library, which is NOT bundled with ComfyUI by default.
 # Folder Watcher (also Web API) uses only Python's standard library.
 requests>=2.31.0
+
+# The GGUF category is the other exception: all 6 GGUF Nodes (File Info,
+# Diffusion Model Loader, CLIP Loader, VAE Loader, Checkpoint Converter,
+# Quant Validator) read/write .gguf files via the `gguf` package — the
+# same Python bindings used by llama.cpp and the ComfyUI-GGUF extension.
+# NOT bundled with ComfyUI by default.
+gguf>=0.10.0

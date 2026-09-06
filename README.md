@@ -1,18 +1,19 @@
 # OmniNodes — ComfyUI Custom Node Pack
 
-> **By TensorVizion** · 127 node files across 9 categories · Verified against
-> the actual pack contents on 2026-08-31.
+> **By TensorVizion** · 130 node files across 10 categories · Verified against
+> the actual pack contents on 2026-09-05.
 
 A production-grade ComfyUI custom node pack covering audio processing, image
-post-processing, latent space manipulation, model utilities, prompt/wildcard
-tooling, sampling primitives, video processing, web API integration, and
-workflow control.
+post-processing, latent space manipulation, model utilities, GGUF quantized
+model loading, prompt/wildcard tooling, sampling primitives, video processing,
+web API integration, and workflow control.
 
 Most of the pack (Audio/Image/Latent/Model/Prompt/Sampling/Video/Workflow) is
 built on PyTorch, NumPy, and Pillow — all bundled with any ComfyUI install, so
 no extra `pip install` is needed for those eight categories. The **Web API**
-category is the one exception: three of its nodes depend on the external
-`requests` library (see [Requirements](#requirements)).
+and **GGUF** categories are the exceptions: Web API's HTTP-dependent nodes
+need `requests`, and all six GGUF Nodes need the `gguf` package (see
+[Requirements](#requirements)).
 
 ---
 
@@ -28,12 +29,15 @@ git clone https://github.com/TensorVizion/OmniNodes
 # ComfyUI/custom_nodes/OmniNodes/
 ```
 
-If you plan to use the **Web API** category, also install its one external
-dependency:
+If you plan to use the **Web API** or **GGUF** categories, also install their
+external dependencies:
 
 ```bash
 cd ComfyUI/custom_nodes/OmniNodes/
 pip install -r requirements.txt
+
+# Or install just the GGUF dependency on its own:
+pip install gguf
 ```
 
 Restart ComfyUI after installing. The loader (`__init__.py`) recursively scans
@@ -41,8 +45,8 @@ every `.py` file in the pack — nodes don't need to follow a specific filename
 pattern to be picked up, but each file **must** define its own
 `NODE_CLASS_MAPPINGS` dict or it will be silently skipped.
 
-Nodes appear in the node search menu under nine sub-groups: `Audio`, `Image`,
-`Latent`, `Model Utilities`/`Model`, `Prompt`, `Sampling`, `Video`,
+Nodes appear in the node search menu under ten sub-groups: `Audio`, `Image`,
+`Latent`, `Model Utilities`/`Model`, `GGUF`, `Prompt`, `Sampling`, `Video`,
 `Web API`, and `Workflow` — see [Known Quirks](#known-quirks) for why Model
 and Sampling nodes are split the way they are.
 
@@ -197,6 +201,46 @@ node uses it) — connecting the `model`/`clip` outputs into a downstream
 KSampler causes ComfyUI to run that KSampler once per strength value
 automatically. Wire the `labels` output into Image Grid Compare's `labels`
 input for an automatically-labeled comparison grid across the whole sweep.
+
+### 🧬 GGUF Nodes — `TensorVizion/GGUF` (6 nodes) *(new)*
+
+Requires the external `gguf` package — see [Requirements](#requirements).
+All six nodes are read/write tools around the GGUF quantized-model file
+format (the same format used by llama.cpp), for opening pre-quantized
+`.gguf` diffusion/CLIP/VAE checkpoints and for making your own.
+
+| Node | Summary |
+|------|---------|
+| **GGUF File Info 🔍** | Read-only inspector: architecture/name metadata plus a per-tensor quantization-type breakdown (real mixed-precision mix, not just a filename guess). Run this first on any downloaded `.gguf` file. |
+| **GGUF Diffusion Model Loader 🧠** | Loads a quantized UNet/diffusion-model `.gguf` file, dequantizing every tensor to fp16/fp32 and handing the result to ComfyUI's own diffusion-model-loading path — output is a normal MODEL. |
+| **GGUF CLIP Loader 📝** | Loads one or two quantized text-encoder `.gguf` files (CLIP-L/CLIP-G/T5-XXL) into a normal CLIP, mirroring core CLIPLoader/DualCLIPLoader's `clip_type` selector. |
+| **GGUF VAE Loader 🗝️** | Loads a quantized VAE `.gguf` file into a normal VAE. Included for symmetry — GGUF VAEs are uncommon in the wild since VAE weights are already small. |
+| **GGUF Checkpoint Converter 🔄** | The write-side counterpart to the three loaders above: quantizes any checkpoint ComfyUI can load into a new `.gguf` file (Q4_0 through Q8_0, or plain F16/F32), via the real `gguf` package's own GGML block-quantization code — not a custom scheme only this pack understands. |
+| **GGUF Quant Validator ✅** | Spot-dequantizes a sample of tensors from a `.gguf` file and flags NaN/Inf, all-zero, or zero-element tensors — a fast sanity check for a truncated download or bad conversion before it fails confusingly three nodes downstream. |
+
+#### GGUF node details
+
+All three loaders (Diffusion Model / CLIP / VAE) work the same way
+under the hood: they fully **dequantize** every tensor to fp16 (or fp32)
+at load time, then hand a plain state dict to ComfyUI's own core
+loading functions. That means the resulting MODEL/CLIP/VAE behaves
+identically to one loaded from safetensors — but it also means loading
+one of these files uses the **full fp16/fp32 VRAM/RAM footprint**, not
+the reduced footprint a dedicated quantized-inference extension (like
+the community ComfyUI-GGUF extension, which keeps weights quantized on
+the GPU via custom ops) provides. Use these nodes when you want to open
+a `.gguf` file without installing that extension and don't need its
+memory savings; reach for that extension instead when VRAM headroom is
+the actual point of using GGUF for you.
+
+**GGUF Checkpoint Converter**'s block-quant types (Q4_0/Q4_1/Q5_0/Q5_1/
+Q8_0) require each tensor's last dimension to be divisible by 32.
+Tensors that don't satisfy this (commonly small 1-D bias/norm vectors)
+are automatically kept at F16 instead of being dropped, so the output
+file is always complete — the fallback count is reported in `report`.
+K-quants (Q4_K etc.) are intentionally not offered here, since a
+faithful K-quant conversion needs an importance-matrix-aware pipeline
+that a single generic tensor-by-tensor pass can't do properly.
 
 ### 🎲 Prompt Nodes — `TensorVizion/Prompt` (13 nodes)
 
@@ -477,7 +521,7 @@ them:
 OmniNodes/
 ├── __init__.py                 ← recursive auto-discovery loader
 ├── README.md
-├── requirements.txt             ← declares `requests` for Web API nodes
+├── requirements.txt             ← declares `requests` for Web API, `gguf` for GGUF Nodes
 ├── pyproject.toml
 ├── Model Links.md               ← creator links (CivitAI/Ko-fi/Patreon), not node docs
 │
@@ -487,6 +531,13 @@ OmniNodes/
 ├── Latent Nodes/                  (11 files, TensorVizion/Latent)
 │   └── latent_qc_gate_node.py           ← new
 ├── Model Nodes/                  (26 files, TensorVizion/Model Utilities + TensorVizion/Model)
+├── GGUF Nodes/                    (6 files, TensorVizion/GGUF) ← new
+│   ├── gguf_file_info_node.py
+│   ├── gguf_diffusion_model_loader_node.py
+│   ├── gguf_clip_loader_node.py
+│   ├── gguf_vae_loader_node.py
+│   ├── gguf_checkpoint_converter_node.py
+│   └── gguf_quant_validator_node.py
 ├── Prompt Nodes/                 (11 files, TensorVizion/Prompt)
 ├── Sampling Nodes/                 (9 files, TensorVizion/Model Utilities + TensorVizion/Sampling)
 │   ├── ksampler_base_refiner_node.py       ← new
@@ -512,13 +563,17 @@ OmniNodes/
 | **NumPy** | Included with ComfyUI |
 | **Pillow** | Included with ComfyUI |
 | **requests** | **NOT bundled with ComfyUI.** Required for HTTP Request, OAuth2 Token Manager, RSS Feed Parser, and Endpoint Poller. Install with `pip install -r requirements.txt` from the pack folder, or `pip install requests` directly. Nodes that need it check for its presence and return a clear error message (rather than crashing) if it's missing. |
+| **gguf** | **NOT bundled with ComfyUI.** Required for all 6 GGUF Nodes (File Info, Diffusion Model Loader, CLIP Loader, VAE Loader, Checkpoint Converter, Quant Validator). Install with `pip install -r requirements.txt` or `pip install gguf` directly. Every GGUF node checks for its presence and returns a clear error message (rather than crashing) if it's missing. |
 | **imageio** + **imageio-ffmpeg** | Optional. Only required for Video Save's mp4/webm output (GIF works with plain `imageio`). Not bundled with ComfyUI. |
 
 All Audio/Image/Latent processing (FFT, phase vocoder, reverb, beat
 detection, color grading, blending, channel mixing) is implemented in pure
 NumPy/PyTorch/Pillow. The Model Utilities nodes use ComfyUI's own
 `folder_paths`, `comfy.sd`, `comfy.utils`, and `comfy.model_management`
-modules, already part of any ComfyUI install.
+modules, already part of any ComfyUI install. The GGUF Nodes use those same
+`comfy.sd`/`comfy.utils`/`folder_paths` modules for the actual MODEL/CLIP/VAE
+construction, plus the external `gguf` package for reading, dequantizing, and
+writing `.gguf` files.
 
 ---
 
@@ -569,6 +624,24 @@ measure. The unload/GC calls still run either way.
 ---
 
 ## Changelog
+
+**2026-09-05**
+- Added a new **GGUF Nodes** category (`TensorVizion/GGUF`, 6 nodes) — the
+  pack's first support for quantized `.gguf` model files:
+  - **GGUF File Info 🔍** — architecture/metadata + per-tensor quant-type
+    breakdown, read-only.
+  - **GGUF Diffusion Model Loader 🧠**, **GGUF CLIP Loader 📝**, **GGUF VAE
+    Loader 🗝️** — dequantize-and-load a GGUF UNet/CLIP/VAE into a normal
+    MODEL/CLIP/VAE via ComfyUI's own core loading functions. See these nodes'
+    docstrings (and [GGUF node details](#gguf-node-details)) for the VRAM
+    trade-off vs a dedicated quantized-inference extension.
+  - **GGUF Checkpoint Converter 🔄** — quantizes any checkpoint into a real
+    `.gguf` file (Q4_0–Q8_0/F16/F32) using the `gguf` package's own GGML
+    block-quantization code.
+  - **GGUF Quant Validator ✅** — spot-checks a `.gguf` file for NaN/Inf,
+    all-zero, or zero-element tensors before it gets loaded downstream.
+  - Requires the new external `gguf` dependency — see
+    [Requirements](#requirements).
 
 **2026-08-31**
 - Added 8 new nodes closing the biggest gaps preventing a fully self-contained
